@@ -154,7 +154,7 @@ export default {
     this.clockInterval = setInterval(this.updateClock, 1000);
 
     // Check room status every second
-    // this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
+    this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
   },
   beforeDestroy() {
     clearInterval(this.clockInterval);
