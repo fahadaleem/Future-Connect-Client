@@ -93,19 +93,18 @@ export default {
     formatTime(time) {
       const options = { hour: "2-digit", minute: "2-digit", hour12: true };
       const dateTime = new Date(time);
-      dateTime.setHours(dateTime.getHours() - 5); // Adjust timezone
+      const timezoneOffset = dateTime.getTimezoneOffset() / 60;
+      dateTime.setHours(dateTime.getHours() + timezoneOffset);
       return new Date(dateTime).toLocaleTimeString("en-US", options);
     },
     getDoctorTiming(checkIn, checkOut) {
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
-
-      checkInDate.setHours(checkInDate.getHours() - 5);
-      checkOutDate.setHours(checkOutDate.getHours() - 5);
-
+      const timezoneOffset = checkInDate.getTimezoneOffset() / 60;
+      checkInDate.setHours(checkInDate.getHours() + timezoneOffset);
+      checkOutDate.setHours(checkOutDate.getHours() + timezoneOffset);
       const checkInFormatted = this.formatTime(checkIn);
       const checkOutFormatted = this.formatTime(checkOut);
-
       const checkInDay = new Date(checkIn).toLocaleDateString("en-US", {
         weekday: "long",
       });
@@ -155,7 +154,7 @@ export default {
     this.clockInterval = setInterval(this.updateClock, 1000);
 
     // Check room status every second
-    this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
+    // this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
   },
   beforeDestroy() {
     clearInterval(this.clockInterval);
