@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import moment from "moment-timezone";
 import MediaContent from "./MediaContent.vue";
 
 export default {
@@ -53,27 +54,24 @@ export default {
   },
   computed: {
     activeEntity() {
-      let currentTime = new Date();
+      const currentTime = moment.tz("Asia/Riyadh"); // Get current time in Riyadh timezone
 
-      const timezoneOffsetMinutes = currentTime.getTimezoneOffset();
-
-      // Calculate the offset in hours and minutes
-      const offsetHours = Math.floor(timezoneOffsetMinutes / 60);
-      const offsetMinutes = timezoneOffsetMinutes % 60;
-
-      // Adjust the current time using the calculated offset
-      currentTime.setHours(currentTime.getHours() - offsetHours);
-      currentTime.setMinutes(currentTime.getMinutes() - offsetMinutes);
-
-      currentTime = currentTime.toISOString();
+      // Filter for active entities based on check-in and check-out times
       const activeEntities = this.roomDetails?.entities?.filter((entity) => {
-        const checkInTime = entity.check_in;
-        const checkOutTime = entity.check_out;
-        return currentTime >= checkInTime && currentTime <= checkOutTime;
+        const checkInTime = moment.tz(entity.check_in, "Asia/Riyadh");
+        const checkOutTime = moment.tz(entity.check_out, "Asia/Riyadh");
+
+        // Check if current time is between check-in and check-out
+        return currentTime.isBetween(checkInTime, checkOutTime, null, "[)");
       });
 
       if (activeEntities && activeEntities.length > 0) {
         const activeEntity = activeEntities[0];
+
+        // Trigger active event
+        this.triggerActiveEvent(activeEntity);
+
+        // Return active entity's details along with timings
         return {
           name: activeEntity.entity.name,
           specialization: activeEntity.entity.specialization,
@@ -86,78 +84,60 @@ export default {
             })),
         };
       }
+
       return null;
     },
   },
   methods: {
     formatTime(time) {
-      const options = { hour: "2-digit", minute: "2-digit", hour12: true };
-      const dateTime = new Date(time);
-      const timezoneOffset = dateTime.getTimezoneOffset() / 60;
-      dateTime.setHours(dateTime.getHours() + timezoneOffset);
-      return new Date(dateTime).toLocaleTimeString("en-US", options);
+      const timeMoment = moment.tz(time, "Asia/Riyadh"); // Use moment to handle time formatting in Riyadh timezone
+      return timeMoment.format("hh:mm A"); // Format as "12:00 PM"
     },
     getDoctorTiming(checkIn, checkOut) {
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
-      const timezoneOffset = checkInDate.getTimezoneOffset() / 60;
-      checkInDate.setHours(checkInDate.getHours() + timezoneOffset);
-      checkOutDate.setHours(checkOutDate.getHours() + timezoneOffset);
+      const checkInMoment = moment.tz(checkIn, "Asia/Riyadh"); // Use moment to handle the times in Riyadh timezone
+      const checkOutMoment = moment.tz(checkOut, "Asia/Riyadh");
+
       const checkInFormatted = this.formatTime(checkIn);
       const checkOutFormatted = this.formatTime(checkOut);
-      const checkInDay = new Date(checkIn).toLocaleDateString("en-US", {
-        weekday: "long",
-      });
-      const checkOutDay = new Date(checkOut).toLocaleDateString("en-US", {
-        weekday: "long",
-      });
 
-      if (checkInDate.toDateString() === checkOutDate.toDateString()) {
+      const checkInDay = checkInMoment.format("dddd"); // Get the day name (e.g., "Monday")
+      const checkOutDay = checkOutMoment.format("dddd");
+
+      if (checkInMoment.isSame(checkOutMoment, "day")) {
         return `${checkInDay} ${checkInFormatted} - ${checkOutFormatted}`;
       }
+
       return `${checkInDay} ${checkInFormatted} - ${checkOutDay} ${checkOutFormatted}`;
     },
     updateClock() {
-      console.log("helloworld");
-      this.currentTime = new Date().toLocaleTimeString(); // Update the digital clock
+      this.currentTime = moment.tz("Asia/Riyadh").format("hh:mm:ss A"); // Update the clock with current time formatted in Riyadh timezone
     },
     checkRoomStatus() {
-      const currentTime = new Date();
+      const currentTime = moment.tz("Asia/Riyadh"); // Use moment to get current time in Riyadh timezone
 
-      // Get the timezone offset in minutes
-      const timezoneOffsetMinutes = currentTime.getTimezoneOffset();
-
-      // Calculate the offset in hours and minutes
-      const offsetHours = Math.floor(timezoneOffsetMinutes / 60);
-      const offsetMinutes = timezoneOffsetMinutes % 60;
-
-      // Adjust the current time using the calculated offset
-      currentTime.setHours(currentTime.getHours() - offsetHours);
-      currentTime.setMinutes(currentTime.getMinutes() - offsetMinutes);
-
-      // Convert the adjusted time back to ISO format for comparison
-      const adjustedTime = currentTime.toISOString();
-
-      if(this.roomDetails?.entities){
       // Check if any entity is active
-        const hasActiveEntity = this.roomDetails?.entities?.some((entity) => {
-          return adjustedTime >= entity.check_in && adjustedTime <= entity.check_out;
-        });
+      const hasActiveEntity = this.roomDetails?.entities?.some((entity) => {
+        const checkInTime = moment.tz(entity.check_in, "Asia/Riyadh");
+        const checkOutTime = moment.tz(entity.check_out, "Asia/Riyadh");
+        return currentTime.isBetween(checkInTime, checkOutTime, null, "[)");
+      });
 
-        // Update room status based on entity activity
-        if (!hasActiveEntity) {
-          this.roomDetails.status = "vacant";
-        }
+      // Update room status based on entity activity
+      if (!hasActiveEntity) {
+        this.roomDetails.status = "vacant";
       }
-
+    },
+    triggerActiveEvent(activeEntity) {
+      console.log(`Entity ${activeEntity.entity.name} is now active.`);
+      // Additional logic to handle the active event can be added here.
     },
   },
   mounted() {
     // Update clock every second
     this.clockInterval = setInterval(this.updateClock, 1000);
 
-    // Check room status every second
-    this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
+    // Check room status every second (uncomment this line if needed)
+     this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
   },
   beforeDestroy() {
     clearInterval(this.clockInterval);
