@@ -138,15 +138,18 @@ export default {
       // Convert the adjusted time back to ISO format for comparison
       const adjustedTime = currentTime.toISOString();
 
+      if(this.roomDetails?.entities){
       // Check if any entity is active
-      const hasActiveEntity = this.roomDetails?.entities?.some((entity) => {
-        return adjustedTime >= entity.check_in && adjustedTime <= entity.check_out;
-      });
+        const hasActiveEntity = this.roomDetails?.entities?.some((entity) => {
+          return adjustedTime >= entity.check_in && adjustedTime <= entity.check_out;
+        });
 
-      // Update room status based on entity activity
-      if (!hasActiveEntity) {
-        this.roomDetails.status = "vacant";
+        // Update room status based on entity activity
+        if (!hasActiveEntity) {
+          this.roomDetails.status = "vacant";
+        }
       }
+
     },
   },
   mounted() {
