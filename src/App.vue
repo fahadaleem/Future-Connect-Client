@@ -88,6 +88,15 @@ export default {
       self.socket.disconnect();
     }
   },
+  mounted() {
+    // Update clock every second
+    this.clockInterval = setInterval(this.getRoomDetails, 60000);
+
+    // Check room status every second (uncomment this line if needed)
+  },
+  beforeDestroy() {
+    clearInterval(this.clockInterval);
+  },
 };
 </script>
 <style></style>
