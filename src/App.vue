@@ -1,7 +1,7 @@
 <template>
   <div>
     <c-room-code-modal v-if="lodashIsEmpty(roomDetails)" @onSetRoomCode="onSetRoomCode"></c-room-code-modal>
-    <c-room-content-view :room-details="roomDetails"></c-room-content-view>
+    <c-room-content-view v-else :room-details="roomDetails"></c-room-content-view>
   </div>
 </template>
 
