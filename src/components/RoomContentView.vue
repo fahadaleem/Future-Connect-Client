@@ -1,30 +1,64 @@
 <template>
   <div class="c-room-content-view h-screen overflow-hidden">
-    <div
-      v-if="roomDetails && roomDetails.status === 'occupied' && activeEntity"
-      class="border-[20px] border-primary p-8 h-screen flex items-center gap-x-12"
-    >
-      <div class="flex-1">
-        <div>
-          <h2 class="text-[4.5vw] font-bold">{{ activeEntity.name }}</h2>
-          <h3 class="font-bold text-[2.5vw]">{{ activeEntity.specialization }}</h3>
-          <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
-        </div>
-
-        <div class="my-8">
-          <h2 class="text-[3vw] font-bold underline">Timings</h2>
-          <div class="mt-6" v-for="(timing, key) in activeEntity.timings" :key="key">
-            <p class="text-gray-800 text-4xl">
-              <span class="text-primary font-semibold">
-                {{ getDoctorTiming(timing.checkIn, timing.checkOut) }}
-              </span>
-            </p>
+    <div v-if="false" class="border-[20px] border-primary h-[100%] overflow-hidden">
+      <div class="p-8"><img :src="clientDetails.client_image_url" class="h-12 w-12" /></div>
+      <div class="p-8 flex items-center gap-x-12">
+        <div class="flex-1">
+          <div class="flex">
+            <div>
+              <img :src="activeEntity.image" />
+            </div>
+            <div class="text-center">
+              <h2 class="text-[4.5vw] font-bold">{{ activeEntity.name }}</h2>
+              <h3 class="font-bold text-[2.5vw]">{{ activeEntity.specialization }}</h3>
+              <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
+              <div class="my-8">
+                <h2 class="text-[3vw] font-bold underline">Timings</h2>
+                <div class="mt-6" v-for="(timing, key) in activeEntity.timings" :key="key">
+                  <p class="text-gray-800 text-4xl">
+                    <span class="text-primary font-semibold">
+                      {{ getDoctorTiming(timing.checkIn, timing.checkOut) }}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="flex-1" v-if="false">
+          <!-- Digital clock -->
+          <p class="text-[6vw] font-bold text-center">{{ currentTime }}</p>
+        </div>
       </div>
-      <div class="flex-1">
+    </div>
+    <!-- new UI -->
+    <div v-if="roomDetails && roomDetails.status === 'occupied' && activeEntity" class="border-[20px] border-primary">
+      <div class="h-20 p-8">
+        <img :src="clientDetails.client_image_url" class="h-12 w-12" />
         <!-- Digital clock -->
-        <p class="text-[6vw] font-bold text-center">{{ currentTime }}</p>
+      </div>
+      <div class="h-screen flex items-center px-10">
+        <div class="w-[450px] pt-20">
+          <img :src="activeEntity.image" class="h-full w-full object-cover" />
+        </div>
+        <div>
+          <div class="text-center">
+            <p class="text-[3vw] font-bold">{{ currentTime }}</p>
+            <h2 class="text-[4vw] font-bold">{{ activeEntity.name }}</h2>
+            <h3 class="font-bold text-[2vw]">{{ activeEntity.specialization }}</h3>
+            <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
+            <div class="my-8">
+              <h2 class="text-[3vw] font-bold underline">Timings</h2>
+              <div class="mt-6" v-for="(timing, key) in activeEntity.timings" :key="key">
+                <p class="text-gray-800 text-2xl">
+                  <span class="text-primary font-semibold">
+                    {{ getDoctorTiming(timing.checkIn, timing.checkOut) }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div v-else>
@@ -41,6 +75,7 @@ export default {
   name: "c-room-content-view",
   props: {
     roomDetails: Object,
+    clientDetails: Object,
   },
   components: {
     cMediaContent: MediaContent,
@@ -76,6 +111,7 @@ export default {
           name: activeEntity.entity.name,
           specialization: activeEntity.entity.specialization,
           education: activeEntity.entity.education,
+          image: activeEntity.entity.image,
           timings: this.roomDetails.entities
             .filter((entity) => entity.entity._id === activeEntity.entity._id)
             .map((entity) => ({
@@ -137,7 +173,7 @@ export default {
     this.clockInterval = setInterval(this.updateClock, 1000);
 
     // Check room status every second (uncomment this line if needed)
-     this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
+    this.roomCheckInterval = setInterval(this.checkRoomStatus, 1000);
   },
   beforeDestroy() {
     clearInterval(this.clockInterval);

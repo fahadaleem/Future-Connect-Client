@@ -1,7 +1,7 @@
 <template>
   <div>
     <c-room-code-modal v-if="lodashIsEmpty(roomDetails)" @onSetRoomCode="onSetRoomCode"></c-room-code-modal>
-    <c-room-content-view v-else :room-details="roomDetails"></c-room-content-view>
+    <c-room-content-view v-else :room-details="roomDetails" :client-details="clientDetails"></c-room-content-view>
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default {
     return {
       roomCode: null,
       roomDetails: {},
+      clientDetails: {},
       socket: null,
     };
   },
@@ -35,7 +36,12 @@ export default {
   methods: {
     initialize() {
       const self = this;
-      self.roomCode = window.sessionStorage.getItem("MMS_ROOM_CODE");
+      apiUtilServices.getClientDetails().then((res) => {
+        self.clientDetails = res.data;
+      });
+      self.roomCode = window.sessionStorage.getItem("MMS_ROOM_CODE")
+        ? window.sessionStorage.getItem("MMS_ROOM_CODE")
+        : null;
       if (self.roomCode) {
         self.getRoomDetails();
       }
