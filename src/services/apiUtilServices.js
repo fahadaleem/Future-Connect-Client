@@ -38,6 +38,7 @@ export const apiUtilServices = (() => {
 
   function getRoomDetails(roomCode) {
     const endPoint = "/rooms/" + roomCode;
+    console.log(getTenant());
     return axios
       .get(`${apiBaseUrl}${endPoint}`, {
         headers: {

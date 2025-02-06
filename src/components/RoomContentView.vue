@@ -36,14 +36,16 @@
       <div class="h-20 p-8">
         <img :src="clientDetails.client_image_url" class="h-12 w-12" />
         <!-- Digital clock -->
+        <div class="h-[200px] w-[200px] ml-auto mt-[-60px]">
+          <c-analog-clock></c-analog-clock>
+        </div>
       </div>
       <div class="h-screen flex items-center px-10">
         <div class="w-[450px] pt-20">
           <img :src="activeEntity.image" class="h-full w-full object-cover" />
         </div>
-        <div>
+        <div class="flex-1">
           <div class="text-center">
-            <p class="text-[3vw] font-bold">{{ currentTime }}</p>
             <h2 class="text-[4vw] font-bold">{{ activeEntity.name }}</h2>
             <h3 class="font-bold text-[2vw]">{{ activeEntity.specialization }}</h3>
             <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
@@ -70,6 +72,7 @@
 <script>
 import moment from "moment-timezone";
 import MediaContent from "./MediaContent.vue";
+import AnalogClock from "./AnalogClock.vue";
 
 export default {
   name: "c-room-content-view",
@@ -79,6 +82,7 @@ export default {
   },
   components: {
     cMediaContent: MediaContent,
+    cAnalogClock: AnalogClock,
   },
   data() {
     return {
