@@ -30,7 +30,7 @@ export const apiUtilServices = (() => {
       .get(`${apiBaseUrl}${endPoint}`, {
         headers: {
           "Timezone-Offset": formatTimezoneOffset(),
-          tenant_id: getTenant(),
+          "X-Tenant": getTenant(),
         },
       })
       .then((res) => res.data);
@@ -43,7 +43,7 @@ export const apiUtilServices = (() => {
       .get(`${apiBaseUrl}${endPoint}`, {
         headers: {
           "Timezone-Offset": formatTimezoneOffset(),
-          tenant_id: getTenant(),
+          "X-Tenant": getTenant(),
         },
       })
       .then((res) => res.data);
