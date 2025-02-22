@@ -18,15 +18,26 @@ function getTenant() {
   const url = window.location.href;
   // get aghakhan from above url
   const tenant = url.split(".")[0].split("//")[1];
+  const isProd = import.meta.env.MODE === "production";
+
+  if(isProd){
+    return tenant
+  }
+  else{
+    return "aghakhan"
+  }
   return tenant;
+
+  
 }
 
 export const apiUtilServices = (() => {
   const apiBaseUrl = `${import.meta.env.VITE_BE_URL}/api`;
+  const bopApi = `${import.meta.env.VITE_TENANT_API}`;
 
   function getClientDetails() {
     const endPoint = "/client/" + getTenant();
-    return axios
+    return  axios
       .get(`${apiBaseUrl}${endPoint}`, {
         headers: {
           "Timezone-Offset": formatTimezoneOffset(),
@@ -49,8 +60,30 @@ export const apiUtilServices = (() => {
       .then((res) => res.data);
   }
 
+  function checkDeviceAvailibity(deviceId) {
+    const endPoint = "/tenant-devices/check/" + deviceId;
+    return axios
+      .get(`${bopApi}${endPoint}`, {
+        headers: {
+        
+        },
+      })
+      .then((res) => res.data);
+  }
+
+  function deviceStatusUpdate(deviceId) {
+    const endPoint = "/tenant-devices/" + deviceId;
+    return axios
+      .put(`${bopApi}${endPoint}`, {
+        device_status:"ACTIVE"
+      })
+      .then((res) => res.data);
+  }
+
   return {
     getRoomDetails,
     getClientDetails,
+    checkDeviceAvailibity,
+    deviceStatusUpdate
   };
 })();

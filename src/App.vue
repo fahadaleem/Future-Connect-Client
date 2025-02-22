@@ -1,27 +1,33 @@
 <template>
-  <div>
+  <div v-if="deviceId !== null" >
     <c-room-code-modal v-if="lodashIsEmpty(roomDetails)" @onSetRoomCode="onSetRoomCode"></c-room-code-modal>
     <c-room-content-view v-else :room-details="roomDetails" :client-details="clientDetails"></c-room-content-view>
+  </div>
+  <div v-else>
+      <c-device-code-modal @onSetDeviceCode="onSetDeviceCode"></c-device-code-modal>
   </div>
 </template>
 
 <script>
 import { apiUtilServices } from "./services/apiUtilServices";
 import { io } from "socket.io-client";
+import Cookies from "js-cookie";
 
 import lodashIsEmpty from "lodash/isEmpty";
 
 import RoomCodeModal from "./components/RoomCodeModal.vue";
 import RoomContentView from "./components/RoomContentView.vue";
-
+import DeviceCodeModal from "./components/DeviceCodeModal.vue"
 export default {
   name: "c-app",
   components: {
     cRoomCodeModal: RoomCodeModal,
     cRoomContentView: RoomContentView,
+    cDeviceCodeModal: DeviceCodeModal
   },
   data() {
     return {
+      deviceId: Cookies.get("DEVICE_ID") || null,
       roomCode: null,
       roomDetails: {},
       clientDetails: {},
@@ -51,9 +57,29 @@ export default {
       self.roomCode = roomCode;
       self.getRoomDetails();
     },
+    onSetDeviceCode(deviceId) {
+      const self = this;
+      apiUtilServices.checkDeviceAvailibity(deviceId).then((res)=>{
+        console.log("res", res)
+        if(res?.success){
+          self.deviceId = deviceId;
+          Cookies.set("DEVICE_ID", deviceId, { expires: 365 }); // Expires in 30 days
+          apiUtilServices.deviceStatusUpdate(res?.tenant_device_id).then((res)=>{
+           
+          })
+        }
+        else{
+            alert(res?.message)
+        }
+        
+      })
+      
+    },
     async getRoomDetails() {
       const self = this;
-      try {
+      if(self.roomCode !== undefined && self.roomCode !== null && self.roomCode !== "null" ){
+        console.log("self.roomCode 333",self.roomCode)
+        try {
         // setting roomcode in session storage
         window.sessionStorage.setItem("MMS_ROOM_CODE", self.roomCode);
         const response = await apiUtilServices.getRoomDetails(self.roomCode);
@@ -68,6 +94,8 @@ export default {
           message: (err.response && err.response.data.message) || "Internal server error.",
         });
       }
+      }
+
     },
     setupSocket() {
       const self = this;
@@ -95,8 +123,11 @@ export default {
     }
   },
   mounted() {
+    const self = this;
+
     // Update clock every second
-    this.clockInterval = setInterval(this.getRoomDetails, 60000);
+
+        this.clockInterval = setInterval(this.getRoomDetails, 60000);
 
     // Check room status every second (uncomment this line if needed)
   },
