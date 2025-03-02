@@ -1,50 +1,22 @@
 <template>
   <div class="c-room-content-view h-screen overflow-hidden">
-    <div v-if="false" class="border-[20px] border-primary h-[100%] overflow-hidden">
-      <div class="p-8"><img :src="clientDetails.client_image_url" class="h-12 w-12" /></div>
-      <div class="p-8 flex items-center gap-x-12">
-        <div class="flex-1">
-          <div class="flex">
-            <div>
-              <img :src="activeEntity.image" />
-            </div>
-            <div class="text-center">
-              <h2 class="text-[4.5vw] font-bold">{{ activeEntity.name }}</h2>
-              <h3 class="font-bold text-[2.5vw]">{{ activeEntity.specialization }}</h3>
-              <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
-              <div class="my-8">
-                <h2 class="text-[3vw] font-bold underline">Timings</h2>
-                <div class="mt-6" v-for="(timing, key) in activeEntity.timings" :key="key">
-                  <p class="text-gray-800 text-4xl">
-                    <span class="text-primary font-semibold">
-                      {{ getDoctorTiming(timing.checkIn, timing.checkOut) }}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex-1" v-if="false">
-          <!-- Digital clock -->
-          <p class="text-[6vw] font-bold text-center">{{ currentTime }}</p>
-        </div>
-      </div>
-    </div>
     <!-- new UI -->
-    <div v-if="roomDetails && roomDetails.status === 'occupied' && activeEntity" class="border-[20px] border-primary">
+    <div v-if="roomDetails && roomDetails.status === 'occupied' && activeEntity" class="border-[20px] h-[100%] border-primary overflow-hidden">
       <div class="h-20 p-8">
         <img :src="clientDetails.client_image_url" class="h-12 w-12" />
         <!-- Digital clock -->
-        <div class="h-[200px] w-[200px] ml-auto mt-[-60px]">
+        <div class="w-[200px] absolute top-10 right-10" v-if="clientDetails.settings.clock_type === 'analog'">
           <c-analog-clock></c-analog-clock>
         </div>
-      </div>
-      <div class="h-screen flex items-center px-10">
-        <div class="w-[450px] pt-20">
-          <img :src="activeEntity.image" class="h-full w-full object-cover" />
+        <div v-else>
+          <c-digital-clock></c-digital-clock>
         </div>
-        <div class="flex-1">
+      </div>
+      <div class="px-10 h-[100%] relative">
+        <div class="pt-20">
+          <img :src="activeEntity.image" class="absolute top-6 w-[36vw] bottom-0 object-cover" />
+        </div>
+        <div class="w-[70%] ml-auto">
           <div class="text-center">
             <h2 class="text-[4vw] font-bold">{{ activeEntity.name }}</h2>
             <h3 class="font-bold text-[2vw]">{{ activeEntity.specialization }}</h3>
@@ -52,7 +24,7 @@
             <div class="my-8">
               <h2 class="text-[3vw] font-bold underline">Timings</h2>
               <div class="mt-6" v-for="(timing, key) in activeEntity.timings" :key="key">
-                <p class="text-gray-800 text-2xl">
+                <p class="text-gray-800 text-[2vw]">
                   <span class="text-primary font-semibold">
                     {{ getDoctorTiming(timing.checkIn, timing.checkOut) }}
                   </span>
@@ -73,7 +45,7 @@
 import moment from "moment-timezone";
 import MediaContent from "./MediaContent.vue";
 import AnalogClock from "./AnalogClock.vue";
-
+import DigitalClock from "./DigitalClock.vue"
 export default {
   name: "c-room-content-view",
   props: {
@@ -83,6 +55,7 @@ export default {
   components: {
     cMediaContent: MediaContent,
     cAnalogClock: AnalogClock,
+    cDigitalClock: DigitalClock
   },
   data() {
     return {
