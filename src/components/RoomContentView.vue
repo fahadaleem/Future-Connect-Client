@@ -17,7 +17,7 @@
           <img :src="activeEntity.image" class="absolute top-6 w-[36vw] bottom-0 object-cover" />
         </div>
         <div class="w-[70%] ml-auto">
-          <div class="text-center">
+          <div class="text-center w-[58vw]">
             <h2 class="text-[4vw] font-bold">{{ activeEntity.name }}</h2>
             <h3 class="font-bold text-[2vw]">{{ activeEntity.specialization }}</h3>
             <h3 class="font-bold text-[1.5vw]">{{ activeEntity.education }}</h3>
