@@ -8,7 +8,7 @@
         <div class="w-[200px] absolute top-10 right-10" v-if="clientDetails && clientDetails.settings && clientDetails.settings.clock_type === 'analog'">
           <c-analog-clock></c-analog-clock>
         </div>
-        <div v-else>
+        <div v-else class="absolute top-10 right-10">
           <c-digital-clock></c-digital-clock>
         </div>
       </div>
