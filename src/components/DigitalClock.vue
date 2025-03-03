@@ -1,6 +1,6 @@
 <template>
     <div class="c-digital-clock text-center">
-      <span class="text-[3.2vw] font-bold">{{ formattedTime }}</span>
+      <span class="text-[4vw] font-bold">{{ formattedTime }}</span>
     </div>
   </template>
   

@@ -3,7 +3,7 @@
     <!-- new UI -->
     <div v-if="roomDetails && roomDetails.status === 'occupied' && activeEntity" class="border-[20px] h-[100%] border-primary overflow-hidden">
       <div class="h-20 p-8">
-        <img :src="clientDetails.client_image_url" class="h-12 w-12" />
+        <img :src="clientDetails.client_image_url" class="h-20 w-20" />
         <!-- Digital clock -->
         <div class="w-[200px] absolute top-10 right-10" v-if="clientDetails && clientDetails.settings && clientDetails.settings.clock_type === 'analog'">
           <c-analog-clock></c-analog-clock>
