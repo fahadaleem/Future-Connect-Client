@@ -3,7 +3,7 @@
     <!-- Display media based on format -->
     <div v-if="mediaContent.format === 'video'" class="media-container">
       <!-- Video player -->
-      <video :src="mediaContent.url" autoplay loop class="w-full h-screen rounded-lg shadow-md"></video>
+      <video :src="mediaContent.url" muted autoplay loop class="w-full h-screen rounded-lg shadow-md"></video>
     </div>
     <div v-else-if="mediaContent.format === 'image'" class="media-container">
       <!-- Image display -->
